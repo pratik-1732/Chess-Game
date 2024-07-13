@@ -157,10 +157,33 @@ public:
 
     void setupPieces()
     {
-        board[0][4] = new King(WHITE, 0, 4);
+        // Setup White Pieces
+        board[0][0] = new Rook(WHITE, 0, 0);
+        board[0][1] = new Knight(WHITE, 0, 1);
+        board[0][2] = new Bishop(WHITE, 0, 2);
         board[0][3] = new Queen(WHITE, 0, 3);
-        board[7][4] = new King(BLACK, 7, 4);
+        board[0][4] = new King(WHITE, 0, 4);
+        board[0][5] = new Bishop(WHITE, 0, 5);
+        board[0][6] = new Knight(WHITE, 0, 6);
+        board[0][7] = new Rook(WHITE, 0, 7);
+        for (int i = 0; i < BOARD_SIZE; ++i)
+        {
+            board[1][i] = new Pawn(WHITE, 1, i);
+        }
+
+        // Setup Black Pieces
+        board[7][0] = new Rook(BLACK, 7, 0);
+        board[7][1] = new Knight(BLACK, 7, 1);
+        board[7][2] = new Bishop(BLACK, 7, 2);
         board[7][3] = new Queen(BLACK, 7, 3);
+        board[7][4] = new King(BLACK, 7, 4);
+        board[7][5] = new Bishop(BLACK, 7, 5);
+        board[7][6] = new Knight(BLACK, 7, 6);
+        board[7][7] = new Rook(BLACK, 7, 7);
+        for (int i = 0; i < BOARD_SIZE; ++i)
+        {
+            board[6][i] = new Pawn(BLACK, 6, i);
+        }
     }
 
     bool movePiece(int startX, int startY, int endX, int endY)
