@@ -213,29 +213,36 @@ public:
 
     void printBoard()
     {
-        cout << "  ";
+        cout << "    ";
         for (int i = 0; i < BOARD_SIZE; ++i)
         {
-            cout << i << " ";
+            cout << i << "   ";
         }
         cout << endl;
 
         for (int i = 0; i < BOARD_SIZE; ++i)
         {
+            cout << "  +---+---+---+---+---+---+---+---+" << endl;
             cout << i << " ";
             for (int j = 0; j < BOARD_SIZE; ++j)
             {
                 if (board[i][j] != nullptr)
                 {
-                    cout << board[i][j]->getSymbol() << " ";
+                    cout << "| " << board[i][j]->getSymbol() << " ";
                 }
                 else
                 {
-                    cout << ". ";
+                    cout << "|   ";
                 }
             }
-            cout << endl;
+            cout << "|" << endl;
         }
+        cout << "  +---+---+---+---+---+---+---+---+" << endl;
+    }
+
+    void printTurn()
+    {
+        cout << (currentPlayer == WHITE ? "White" : "Black") << "'s turn." << endl;
     }
 };
 
@@ -243,6 +250,7 @@ int main()
 {
     Board chessBoard;
     chessBoard.printBoard();
+    chessBoard.printTurn();
 
     int startX, startY, endX, endY;
     while (true)
@@ -252,6 +260,7 @@ int main()
         if (chessBoard.movePiece(startX, startY, endX, endY))
         {
             chessBoard.printBoard();
+            chessBoard.printTurn();
         }
     }
 
