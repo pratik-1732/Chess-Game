@@ -213,8 +213,16 @@ public:
 
     void printBoard()
     {
+        cout << "  ";
         for (int i = 0; i < BOARD_SIZE; ++i)
         {
+            cout << i << " ";
+        }
+        cout << endl;
+
+        for (int i = 0; i < BOARD_SIZE; ++i)
+        {
+            cout << i << " ";
             for (int j = 0; j < BOARD_SIZE; ++j)
             {
                 if (board[i][j] != nullptr)
