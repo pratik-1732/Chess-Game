@@ -20,6 +20,127 @@ enum Color
     NONE
 };
 
+// Base class for all pieces
+class Piece
+{
+public:
+    PieceType type;
+    Color color;
+    int x, y;
+
+    Piece(PieceType type, Color color, int x, int y) : type(type), color(color), x(x), y(y) {}
+    virtual bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) = 0;
+    virtual char getSymbol() = 0;
+};
+
+// Derived classes for each piece type
+class King : public Piece
+{
+public:
+    King(Color color, int x, int y) : Piece(KING, color, x, y) {}
+
+    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
+    {
+        return abs(newX - x) <= 1 && abs(newY - y) <= 1;
+    }
+
+    char getSymbol() override
+    {
+        return (color == WHITE) ? 'K' : 'k';
+    }
+};
+
+class Queen : public Piece
+{
+public:
+    Queen(Color color, int x, int y) : Piece(QUEEN, color, x, y) {}
+
+    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
+    {
+        return (newX == x || newY == y || abs(newX - x) == abs(newY - y));
+    }
+
+    char getSymbol() override
+    {
+        return (color == WHITE) ? 'Q' : 'q';
+    }
+};
+
+class Rook : public Piece
+{
+public:
+    Rook(Color color, int x, int y) : Piece(ROOK, color, x, y) {}
+
+    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
+    {
+        return (newX == x || newY == y);
+    }
+
+    char getSymbol() override
+    {
+        return (color == WHITE) ? 'R' : 'r';
+    }
+};
+
+class Bishop : public Piece
+{
+public:
+    Bishop(Color color, int x, int y) : Piece(BISHOP, color, x, y) {}
+
+    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
+    {
+        return abs(newX - x) == abs(newY - y);
+    }
+
+    char getSymbol() override
+    {
+        return (color == WHITE) ? 'B' : 'b';
+    }
+};
+
+class Knight : public Piece
+{
+public:
+    Knight(Color color, int x, int y) : Piece(KNIGHT, color, x, y) {}
+
+    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
+    {
+        int dx = abs(newX - x);
+        int dy = abs(newY - y);
+        return (dx == 2 && dy == 1) || (dx == 1 && dy == 2);
+    }
+
+    char getSymbol() override
+    {
+        return (color == WHITE) ? 'N' : 'n';
+    }
+};
+
+class Pawn : public Piece
+{
+public:
+    Pawn(Color color, int x, int y) : Piece(PAWN, color, x, y) {}
+
+    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
+    {
+        int direction = (color == WHITE) ? -1 : 1;
+        if (newX == x + direction && newY == y && board[newX][newY] == nullptr)
+        {
+            return true;
+        }
+        else if (newX == x + direction && abs(newY - y) == 1 && board[newX][newY] != nullptr && board[newX][newY]->color != color)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    char getSymbol() override
+    {
+        return (color == WHITE) ? 'P' : 'p';
+    }
+};
+
 class Board
 {
 private:
