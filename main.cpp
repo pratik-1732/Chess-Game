@@ -244,7 +244,7 @@ public:
 
     void printTurn()
     {
-        cout << (currentPlayer == WHITE ? "White" : "Black") << "'s turn." << endl;
+        cout << (currentPlayer == WHITE ? "White (uppercase)" : "Black (lowercase)") << "'s turn." << endl;
     }
 };
 
@@ -254,11 +254,17 @@ int main()
     chessBoard.printBoard();
     chessBoard.printTurn();
 
-    int startRow, startCol, endRow, endCol;
+    int startRow, endRow;
+    char startColChar, endColChar;
     while (true)
     {
         cout << "Enter move (startRow startCol endRow endCol): ";
-        cin >> startRow >> startCol >> endRow >> endCol;
+        cin >> startRow >> startColChar >> endRow >> endColChar;
+
+        // Convert column characters to indices
+        int startCol = startColChar - 'A';
+        int endCol = endColChar - 'A';
+
         if (chessBoard.movePiece(startRow, startCol, endRow, endCol))
         {
             chessBoard.printBoard();
