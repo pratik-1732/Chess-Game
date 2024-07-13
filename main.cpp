@@ -186,21 +186,21 @@ public:
         }
     }
 
-    bool movePiece(int startX, int startY, int endX, int endY)
+    bool movePiece(int startRow, int startCol, int endRow, int endCol)
     {
-        Piece *piece = board[startX][startY];
+        Piece *piece = board[startRow][startCol];
         if (piece == nullptr || piece->color != currentPlayer)
         {
             cout << "Invalid move!" << endl;
             return false;
         }
 
-        if (piece->isValidMove(endX, endY, board))
+        if (piece->isValidMove(endRow, endCol, board))
         {
-            board[endX][endY] = piece;
-            board[startX][startY] = nullptr;
-            piece->x = endX;
-            piece->y = endY;
+            board[endRow][endCol] = piece;
+            board[startRow][startCol] = nullptr;
+            piece->x = endRow;
+            piece->y = endCol;
             currentPlayer = (currentPlayer == WHITE) ? BLACK : WHITE;
             return true;
         }
@@ -214,21 +214,23 @@ public:
     void printBoard()
     {
         cout << "    ";
+        char ch = 'A';
         for (int i = 0; i < BOARD_SIZE; ++i)
         {
-            cout << i << "   ";
+            cout << ch << "   ";
+            ch++;
         }
         cout << endl;
 
-        for (int i = 0; i < BOARD_SIZE; ++i)
+        for (int i = 1; i <= BOARD_SIZE; ++i)
         {
             cout << "  +---+---+---+---+---+---+---+---+" << endl;
             cout << i << " ";
-            for (int j = 0; j < BOARD_SIZE; ++j)
+            for (int j = 1; j <= BOARD_SIZE; ++j)
             {
-                if (board[i][j] != nullptr)
+                if (board[i - 1][j - 1] != nullptr)
                 {
-                    cout << "| " << board[i][j]->getSymbol() << " ";
+                    cout << "| " << board[i - 1][j - 1]->getSymbol() << " ";
                 }
                 else
                 {
@@ -252,12 +254,12 @@ int main()
     chessBoard.printBoard();
     chessBoard.printTurn();
 
-    int startX, startY, endX, endY;
+    int startRow, startCol, endRow, endCol;
     while (true)
     {
-        cout << "Enter move (startX startY endX endY): ";
-        cin >> startX >> startY >> endX >> endY;
-        if (chessBoard.movePiece(startX, startY, endX, endY))
+        cout << "Enter move (startRow startCol endRow endCol): ";
+        cin >> startRow >> startCol >> endRow >> endCol;
+        if (chessBoard.movePiece(startRow, startCol, endRow, endCol))
         {
             chessBoard.printBoard();
             chessBoard.printTurn();
