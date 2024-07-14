@@ -1,143 +1,159 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+
 using namespace std;
 
 const int BOARD_SIZE = 8;
 
-enum PieceType
-{
-    KING,
-    QUEEN,
-    ROOK,
-    BISHOP,
-    KNIGHT,
-    PAWN,
-    EMPTY
-};
 enum Color
 {
     WHITE,
-    BLACK,
-    NONE
+    BLACK
 };
 
-// Base class for all pieces
 class Piece
 {
 public:
-    PieceType type;
     Color color;
     int x, y;
 
-    Piece(PieceType type, Color color, int x, int y) : type(type), color(color), x(x), y(y) {}
-    virtual bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) = 0;
-    virtual char getSymbol() = 0;
+    Piece(Color color, int x, int y) : color(color), x(x), y(y) {}
+    virtual char getSymbol() const = 0;
+    virtual bool isValidMove(int destRow, int destCol, const vector<vector<Piece *>> &board) = 0;
 };
 
-// Derived classes for each piece type
-class King : public Piece
+class Pawn : public Piece
 {
 public:
-    King(Color color, int x, int y) : Piece(KING, color, x, y) {}
+    Pawn(Color color, int x, int y) : Piece(color, x, y) {}
 
-    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
+    char getSymbol() const override
     {
-        return abs(newX - x) <= 1 && abs(newY - y) <= 1;
+        return color == WHITE ? 'P' : 'p';
     }
 
-    char getSymbol() override
+    bool isValidMove(int destRow, int destCol, const vector<vector<Piece *>> &board) override
     {
-        return (color == WHITE) ? 'K' : 'k';
-    }
-};
+        // Check if destination coordinates are within bounds
+        if (destRow < 0 || destRow >= BOARD_SIZE || destCol < 0 || destCol >= BOARD_SIZE)
+        {
+            return false;
+        }
 
-class Queen : public Piece
-{
-public:
-    Queen(Color color, int x, int y) : Piece(QUEEN, color, x, y) {}
+        if (color == WHITE)
+        {
+            if (destRow == x - 1 && destCol == y && board[destRow][destCol] == nullptr)
+            {
+                return true;
+            }
+            if (x == 6 && destRow == x - 2 && destCol == y && board[destRow][destCol] == nullptr)
+            {
+                return true;
+            }
+            if (destRow == x - 1 && (destCol == y - 1 || destCol == y + 1) && board[destRow][destCol] != nullptr)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (destRow == x + 1 && destCol == y && board[destRow][destCol] == nullptr)
+            {
+                return true;
+            }
+            if (x == 1 && destRow == x + 2 && destCol == y && board[destRow][destCol] == nullptr)
+            {
+                return true;
+            }
+            if (destRow == x + 1 && (destCol == y - 1 || destCol == y + 1) && board[destRow][destCol] != nullptr)
+            {
+                return true;
+            }
+        }
 
-    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
-    {
-        return (newX == x || newY == y || abs(newX - x) == abs(newY - y));
-    }
-
-    char getSymbol() override
-    {
-        return (color == WHITE) ? 'Q' : 'q';
-    }
-};
-
-class Rook : public Piece
-{
-public:
-    Rook(Color color, int x, int y) : Piece(ROOK, color, x, y) {}
-
-    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
-    {
-        return (newX == x || newY == y);
-    }
-
-    char getSymbol() override
-    {
-        return (color == WHITE) ? 'R' : 'r';
-    }
-};
-
-class Bishop : public Piece
-{
-public:
-    Bishop(Color color, int x, int y) : Piece(BISHOP, color, x, y) {}
-
-    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
-    {
-        return abs(newX - x) == abs(newY - y);
-    }
-
-    char getSymbol() override
-    {
-        return (color == WHITE) ? 'B' : 'b';
+        return false;
     }
 };
 
 class Knight : public Piece
 {
 public:
-    Knight(Color color, int x, int y) : Piece(KNIGHT, color, x, y) {}
+    Knight(Color color, int x, int y) : Piece(color, x, y) {}
 
-    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
+    char getSymbol() const override
     {
-        int dx = abs(newX - x);
-        int dy = abs(newY - y);
-        return (dx == 2 && dy == 1) || (dx == 1 && dy == 2);
+        return color == WHITE ? 'N' : 'n';
     }
 
-    char getSymbol() override
+    bool isValidMove(int destRow, int destCol, const vector<vector<Piece *>> &board) override
     {
-        return (color == WHITE) ? 'N' : 'n';
+        int dx = abs(destRow - x);
+        int dy = abs(destCol - y);
+        return (dx == 2 && dy == 1) || (dx == 1 && dy == 2);
     }
 };
 
-class Pawn : public Piece
+class Bishop : public Piece
 {
 public:
-    Pawn(Color color, int x, int y) : Piece(PAWN, color, x, y) {}
+    Bishop(Color color, int x, int y) : Piece(color, x, y) {}
 
-    bool isValidMove(int newX, int newY, vector<vector<Piece *>> &board) override
+    char getSymbol() const override
     {
-        int direction = (color == WHITE) ? -1 : 1;
-        if (newX == x + direction && newY == y && board[newX][newY] == nullptr)
-        {
-            return true;
-        }
-        else if (newX == x + direction && abs(newY - y) == 1 && board[newX][newY] != nullptr && board[newX][newY]->color != color)
-        {
-            return true;
-        }
-        return false;
+        return color == WHITE ? 'B' : 'b';
     }
 
-    char getSymbol() override
+    bool isValidMove(int destRow, int destCol, const vector<vector<Piece *>> &board) override
     {
-        return (color == WHITE) ? 'P' : 'p';
+        return abs(destRow - x) == abs(destCol - y);
+    }
+};
+
+class Rook : public Piece
+{
+public:
+    Rook(Color color, int x, int y) : Piece(color, x, y) {}
+
+    char getSymbol() const override
+    {
+        return color == WHITE ? 'R' : 'r';
+    }
+
+    bool isValidMove(int destRow, int destCol, const vector<vector<Piece *>> &board) override
+    {
+        return (destRow == x) || (destCol == y);
+    }
+};
+
+class Queen : public Piece
+{
+public:
+    Queen(Color color, int x, int y) : Piece(color, x, y) {}
+
+    char getSymbol() const override
+    {
+        return color == WHITE ? 'Q' : 'q';
+    }
+
+    bool isValidMove(int destRow, int destCol, const vector<vector<Piece *>> &board) override
+    {
+        return (destRow == x) || (destCol == y) || (abs(destRow - x) == abs(destCol - y));
+    }
+};
+
+class King : public Piece
+{
+public:
+    King(Color color, int x, int y) : Piece(color, x, y) {}
+
+    char getSymbol() const override
+    {
+        return color == WHITE ? 'K' : 'k';
+    }
+
+    bool isValidMove(int destRow, int destCol, const vector<vector<Piece *>> &board) override
+    {
+        return abs(destRow - x) <= 1 && abs(destCol - y) <= 1;
     }
 };
 
@@ -188,49 +204,56 @@ public:
 
     bool movePiece(int startRow, int startCol, int endRow, int endCol)
     {
+        cout << "Attempting to move piece from (" << startRow << ", " << startCol << ") to (" << endRow << ", " << endCol << ")" << endl;
         Piece *piece = board[startRow][startCol];
         if (piece == nullptr || piece->color != currentPlayer)
         {
-            cout << "Invalid move!" << endl;
+            cout << "Invalid move: No piece at start or wrong turn!" << endl;
             return false;
         }
 
         if (piece->isValidMove(endRow, endCol, board))
         {
-            board[endRow][endCol] = piece;
-            board[startRow][startCol] = nullptr;
-            piece->x = endRow;
-            piece->y = endCol;
-            currentPlayer = (currentPlayer == WHITE) ? BLACK : WHITE;
-            return true;
+            if (board[endRow][endCol] == nullptr || board[endRow][endCol]->color != currentPlayer)
+            {
+                board[endRow][endCol] = piece;
+                board[startRow][startCol] = nullptr;
+                piece->x = endRow;
+                piece->y = endCol;
+                currentPlayer = (currentPlayer == WHITE) ? BLACK : WHITE;
+                return true;
+            }
+            else
+            {
+                cout << "Invalid move: Cannot capture your own piece." << endl;
+            }
         }
         else
         {
-            cout << "Invalid move!" << endl;
-            return false;
+            cout << "Invalid move: Move not valid for piece." << endl;
         }
+
+        return false;
     }
 
     void printBoard()
     {
         cout << "    ";
-        char ch = 'A';
         for (int i = 0; i < BOARD_SIZE; ++i)
         {
-            cout << ch << "   ";
-            ch++;
+            cout << char('A' + i) << "   ";
         }
         cout << endl;
 
-        for (int i = 1; i <= BOARD_SIZE; ++i)
+        for (int i = 0; i < BOARD_SIZE; ++i)
         {
             cout << "  +---+---+---+---+---+---+---+---+" << endl;
-            cout << i << " ";
-            for (int j = 1; j <= BOARD_SIZE; ++j)
+            cout << (BOARD_SIZE - i) << " ";
+            for (int j = 0; j < BOARD_SIZE; ++j)
             {
-                if (board[i - 1][j - 1] != nullptr)
+                if (board[i][j] != nullptr)
                 {
-                    cout << "| " << board[i - 1][j - 1]->getSymbol() << " ";
+                    cout << "| " << board[i][j]->getSymbol() << " ";
                 }
                 else
                 {
@@ -244,7 +267,7 @@ public:
 
     void printTurn()
     {
-        cout << (currentPlayer == WHITE ? "White (uppercase)" : "Black (lowercase)") << "'s turn." << endl;
+        cout << (currentPlayer == WHITE ? "White" : "Black") << "'s turn." << endl;
     }
 };
 
@@ -261,9 +284,12 @@ int main()
         cout << "Enter move (startRow startCol endRow endCol): ";
         cin >> startRow >> startColChar >> endRow >> endColChar;
 
-        // Convert column characters to indices
         int startCol = startColChar - 'A';
         int endCol = endColChar - 'A';
+
+        // Convert from 1-indexed to 0-indexed for internal representation
+        startRow = BOARD_SIZE - startRow;
+        endRow = BOARD_SIZE - endRow;
 
         if (chessBoard.movePiece(startRow, startCol, endRow, endCol))
         {
